@@ -8,14 +8,14 @@ spring:
     url: jdbc:h2:mem:testdb
     driver-class-name: org.h2.Driver
     username: sa
-    password:
+    password:  # 비밀번호 없음
 
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: create-drop
     properties:
-      hibernate: # ????? ???? sql? ?? ?? ?? ?? ??
+      hibernate:  # 콘솔창에서 실행되는 sql을 보기 좋게 하는 설정 추가
         format_sql: true
         show_sql: true
     defer-datasource-initialization: true

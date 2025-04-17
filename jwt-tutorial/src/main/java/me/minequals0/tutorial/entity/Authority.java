@@ -16,7 +16,7 @@ import lombok.*;
 public class Authority {
 
     @Id
-    @Column(name = "authoriy_name", length = 50)
+    @Column(name = "authority_name", length = 50)
     private String authorityName;
 
 }
