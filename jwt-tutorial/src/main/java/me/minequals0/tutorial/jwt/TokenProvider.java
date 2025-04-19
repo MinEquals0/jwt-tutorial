@@ -20,7 +20,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
 
-@Component
+@Component // 빈 생성
 public class TokenProvider implements InitializingBean {
 
     private final Logger logger = LoggerFactory.getLogger(TokenProvider.class);
@@ -29,6 +29,7 @@ public class TokenProvider implements InitializingBean {
     private final long tokenValidityInMilliseconds;
     private Key key;
 
+    // DI, secret 값 주입됨
     public TokenProvider(
             @Value("${jwt.secret}") String secret,
             @Value("${jwt.token-validity-in-seconds}") long tokenValidityInSeconds) {
@@ -36,20 +37,26 @@ public class TokenProvider implements InitializingBean {
         this.tokenValidityInMilliseconds = tokenValidityInSeconds * 1000;
     }
 
+
+    // 인터페이스인 InitializingBean을 구현해서 메서드 오버라이드
+    // 빈이 생성 되고 DI 한 다음에 주입 받은 secret 값을 Base64 Decode해서 key 변수에 할당
     @Override
     public void afterPropertiesSet() {
         byte[] keyBytes = Decoders.BASE64.decode(secret);
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
+    // Authentication 객체의 권한정보를 이용해 토큰을 생성
     public String createToken(Authentication authentication) {
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
 
+        // yml에서 설정했던 토큰 만료시간을 설정
         long now = (new Date()).getTime();
         Date validity = new Date(now + this.tokenValidityInMilliseconds);
 
+        // 토큰 생성해서 리턴
         return Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim(AUTHORITIES_KEY, authorities)
@@ -58,7 +65,10 @@ public class TokenProvider implements InitializingBean {
                 .compact();
     }
 
+    // 토큰을 매개변수로 받아 토큰에 담겨있는 정보를 이용해 Authentication 객체를 리턴하는 메소드
+    //
     public Authentication getAuthentication(String token) {
+        // 토큰을 claims로 만들어 줌
         Claims claims = Jwts
                 .parserBuilder()
                 .setSigningKey(key)
@@ -66,6 +76,7 @@ public class TokenProvider implements InitializingBean {
                 .parseClaimsJws(token)
                 .getBody();
 
+        // claims에서 권한 정보들을 가져옴(authorities) -> 이걸 이용해 User 객체를 만듦
         Collection<? extends GrantedAuthority> authorities =
                 Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
                         .map(SimpleGrantedAuthority::new)
@@ -73,11 +84,16 @@ public class TokenProvider implements InitializingBean {
 
         User principal = new User(claims.getSubject(), "", authorities);
 
+        // User 정보, 토큰, 권한 정보를 이용해 최종적으로 Authentication 객체 리턴
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
 
+
+    // 토큰을 매개변수로 받아 토큰의 유효성 검증을 수행하는 메소드
     public boolean validateToken(String token) {
         try {
+            // 매개변수로 받은 토큰을 파싱하여 발생하는 Exception들을 캐치해
+            // 문제가 있으면 return false, 없으면 true
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
