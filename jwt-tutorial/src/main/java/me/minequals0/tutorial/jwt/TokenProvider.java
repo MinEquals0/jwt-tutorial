@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
 
+// JWT 토큰을 생성, 검증, 토큰에서 유저 정보 추출, 토큰 서명 및 키 관리 역할
 @Component // 빈 생성
 public class TokenProvider implements InitializingBean {
 
@@ -66,7 +67,6 @@ public class TokenProvider implements InitializingBean {
     }
 
     // 토큰을 매개변수로 받아 토큰에 담겨있는 정보를 이용해 Authentication 객체를 리턴하는 메소드
-    //
     public Authentication getAuthentication(String token) {
         // 토큰을 claims로 만들어 줌
         Claims claims = Jwts
