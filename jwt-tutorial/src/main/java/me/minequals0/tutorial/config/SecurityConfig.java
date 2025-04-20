@@ -16,9 +16,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-@Configuration
-@EnableWebSecurity
-@EnableMethodSecurity
+// HTTP 요청에 대한 보안 설정을 정의
+// 인증과 권한 부여, 예외 처리, 세션 관리 등을 처리하는 HTTP 요청을 구성하는 역할
+@Configuration  // 설정 클래스, 스프링이 빈으로 등록
+@EnableWebSecurity // Spring Security 설정을 활성화함
+@EnableMethodSecurity // 메서드 수준에서 권한 체크를 가능하게 해줌
 public class SecurityConfig {
     private final TokenProvider tokenProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
@@ -33,7 +35,7 @@ public class SecurityConfig {
         this.jwtAccessDeniedHandler = jwtAccessDeniedHandler;
     }
 
-    // ??
+    // 비밀번호 암호화를 위한 빈 등록 (BCrypt 알고리즘 사용)
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
@@ -45,21 +47,23 @@ public class SecurityConfig {
                 // 토큰을 사용하니까 csrf는 disable
                 .csrf(AbstractHttpConfigurer::disable)
 
-                //추가, 이후 수정
+                // 인증, 인가 예외 발생 시 처리할 핸들러 등록
+                // 추가, 이후 수정
 //                .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exceptionHandling -> exceptionHandling
-                    .accessDeniedHandler(jwtAccessDeniedHandler)
-                    .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                    .accessDeniedHandler(jwtAccessDeniedHandler)  // 권한 없는 경우 (403)
+                    .authenticationEntryPoint(jwtAuthenticationEntryPoint) // 인증 안 된 경우 (401)
                         )
 
+                // 특정 API 경로는 인증 없이 접근 허용
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
                         .requestMatchers("/api/hello",
-                                "/h2-console/**",  //8080으로 DB 확인용
+                                "/h2-console/**",   // H2 DB 웹 콘솔 접근 허용
                                 "/api/authenticate", // 로그인 API
                                 "/api/signup").permitAll() // 회원가입 API
                         // 위의 API들은 토큰이 없는 상태에서 요청이 들어오기 때문에 모두 permitAll 설정
                         .requestMatchers(PathRequest.toH2Console()).permitAll()
-                        .anyRequest().authenticated()
+                        .anyRequest().authenticated() // 그 외 요청은 인증 필요
                 )
 
                 // 세션을 사용하지 않기 때문에 STATELESS로 설정 - 추가
@@ -67,12 +71,12 @@ public class SecurityConfig {
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
-                // h2-console을 위한 설정
+                // H2 콘솔을 위한 설정 (iframe 허용)
                 .headers(headers ->
                         headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)
                 )
 
-
+                // 커스텀 JWT 보안 설정 적용 (JwtFilter 등록됨)
                 .with(new JwtSecurityConfig(tokenProvider), customizer -> {});
         return http.build();
     }
