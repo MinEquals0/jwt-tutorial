@@ -47,9 +47,8 @@ public class SecurityConfig {
                 // 토큰을 사용하니까 csrf는 disable
                 .csrf(AbstractHttpConfigurer::disable)
 
-                // 인증, 인가 예외 발생 시 처리할 핸들러 등록
-                // 추가, 이후 수정
-//                .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
+                // 인증, 인가 예외 발생 시 처리할 핸들러 등록 - 추가, 이후 수정
+//                .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class) // filter 교체
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                     .accessDeniedHandler(jwtAccessDeniedHandler)  // 권한 없는 경우 (403)
                     .authenticationEntryPoint(jwtAuthenticationEntryPoint) // 인증 안 된 경우 (401)
