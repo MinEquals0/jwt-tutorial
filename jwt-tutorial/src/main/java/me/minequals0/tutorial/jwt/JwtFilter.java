@@ -19,7 +19,7 @@ import java.io.IOException;
 // HTTP 요청이 들어올 때마다 자동으로 실행되며, 주로 보안 관련 작업을 수행
 public class JwtFilter extends GenericFilterBean {
     private static final Logger logger = LoggerFactory.getLogger(JwtFilter.class);
-    private static final String AUTHORIZATION_HEADER = "Authorization";
+    public static final String AUTHORIZATION_HEADER = "Authorization";
     private TokenProvider tokenProvider;
 
     public JwtFilter(TokenProvider tokenProvider) {
