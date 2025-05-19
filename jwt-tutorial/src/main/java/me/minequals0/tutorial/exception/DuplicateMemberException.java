@@ -16,5 +16,4 @@ public class DuplicateMemberException extends RuntimeException{
     public DuplicateMemberException(Throwable cause) {
         super(cause);
     }
-
 }
