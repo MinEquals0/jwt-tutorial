@@ -22,6 +22,8 @@ public class UserController {
     }
 
     // API 테스트용 메서드
+    // JWT 토큰을 로그인 응답에서 추출해 Postman의 Scripts에 저장
+    // 다른 보호된 API 요청에 자동으로 붙여서 인증 테스트하기
     @GetMapping("/hello")
     public ResponseEntity<String> hello() {
         return ResponseEntity.ok("hello");
