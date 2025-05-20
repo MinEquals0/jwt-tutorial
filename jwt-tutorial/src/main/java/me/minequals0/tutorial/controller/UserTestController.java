@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 // 다른 보호된 API 요청에 자동으로 붙여서 인증 테스트하기
 @RestController
 @RequestMapping("/api/user")
-public class UserController {
+public class UserTestController {
 
     @GetMapping("/hello")
     public ResponseEntity<String> helloUser() {
