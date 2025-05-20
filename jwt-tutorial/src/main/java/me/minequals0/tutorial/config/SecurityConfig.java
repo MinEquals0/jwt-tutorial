@@ -14,7 +14,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 // HTTP 요청에 대한 보안 설정을 정의
 // 인증과 권한 부여, 예외 처리, 세션 관리 등을 처리하는 HTTP 요청을 구성하는 역할
@@ -57,7 +56,6 @@ public class SecurityConfig {
                 // 특정 API 경로는 인증 없이 접근 허용
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
                         .requestMatchers("/api/hello",
-                                "/h2-console/**",   // H2 DB 웹 콘솔 접근 허용
                                 "/api/authenticate", // 로그인 API
                                 "/api/signup").permitAll() // 회원가입 API
                         // 위의 API들은 토큰이 없는 상태에서 요청이 들어오기 때문에 모두 permitAll 설정
