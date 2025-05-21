@@ -14,8 +14,8 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
-// 주로 요청(Request)에 포함된 JWT 토큰 검사,검증
-// 인증된 사용자 정보를 SecurityContext에 설정
+// JWT 토큰을 HTTP 요청(Request)에서 추출하고, 토큰의 유효성을 검사해
+// 인증된 사용자 정보를 Security Context에 저장하는 역할
 // HTTP 요청이 들어올 때마다 자동으로 실행되며, 주로 보안 관련 작업을 수행
 public class JwtFilter extends GenericFilterBean {
     private static final Logger logger = LoggerFactory.getLogger(JwtFilter.class);
