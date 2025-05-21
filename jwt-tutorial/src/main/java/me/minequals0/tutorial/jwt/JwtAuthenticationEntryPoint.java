@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-// 유효한 자격 증명을 제공하지 않고 접근하려 할 때, 401 Unauthorized 에러를 리턴하는 역할
+// JWT에서 인증되지 않은 사용자가 접근할 때, 401 Unauthorized 에러를 리턴하는 역할
 @Component
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
